@@ -1,8 +1,8 @@
 <?php
 require_once '../vendor/autoload.php';
 
-use App\HomeController;
+use App\Controller\OrderController;
 use App\View;
-
-$controller = new HomeController( new View());
-$controller->greet();
+$get = $_GET;
+$controller = new OrderController( new View());
+$controller->dimensions();

@@ -15,39 +15,31 @@
             <h2 class="text-xl font-semibold mb-4">Witamy w naszym konfiguratorze drzwi stalowych!</h2>
             <p class="mb-4">Skonfiguruj swoje drzwi, wybierając spośród różnych opcji i dodatków.</p>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 mt-8">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-8">
             <div class="flex items-center justify-between border border-gray-300 rounded-xl p-3">
-                <span class="text-xs">Podaj Wymiar</span>
+                <span class="text-xs">Wymiary</span>
                 <span class="text-xl">1</span>
             </div>
             <div class="flex items-center justify-between border border-gray-300 rounded-xl p-3">
-                <span class="text-xs">Wybierz Kolor</span>
+                <span class="text-xs">Model</span>
                 <span class="text-xl">2</span>
             </div>
             <div class="flex items-center justify-between border border-gray-300 rounded-xl p-3">
-                <span class="text-xs">Rodzaj Otwerania</span>
+                <span class="text-xs">Wyposazenie</span>
                 <span class="text-xl">3</span>
             </div>
             <div class="flex items-center justify-between border border-gray-300 rounded-xl p-3">
-                <span class="text-xs">Rodzaj Przetłoczenoa</span>
+                <span class="text-xs">Podsumowanie</span>
                 <span class="text-xl">4</span>
             </div>
             <div class="flex items-center justify-between border border-gray-300 rounded-xl p-3">
-                <span class="text-xs">Rodzaj Ocieplenia</span>
+                <span class="text-xs">Zamówienie</span>
                 <span class="text-xl">5</span>
             </div>
-            <div class="flex items-center justify-between border border-gray-300 rounded-xl p-3">
-                <span class="text-xs">Dodatki</span>
-                <span class="text-xl">6</span>
-            </div>
-            <div class="flex items-center justify-between border border-gray-300 rounded-xl p-3">
-                <span class="text-xs">Sztuk</span>
-                <span class="text-xl">7</span>
-            </div>
         </div>
-        <div>
+        <div class="mt-8">
             <?php 
-                $page = $data['page'] ?? 'step_1';
+                $page = $data['page'] ?? 'equipment';
                 require_once dirname(__DIR__) . '/templates/steps/' . $page . '.php';
             ?>
         </div>
