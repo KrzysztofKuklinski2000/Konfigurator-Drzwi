@@ -33,7 +33,7 @@ class DoorRepository
      */
     public function getAccessories(): array {
         try{
-            $stmt = $this->conn->prepare("SELECT * FROM accessories");
+            $stmt = $this->conn->prepare("SELECT * FROM akcesoria");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }catch(PDOException $e){
@@ -54,6 +54,40 @@ class DoorRepository
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }catch(PDOException $e){
             throw new Exception('Błąd przy pobieraniu kierunków otwierania: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Pobiera listę dostępnych kolorów drzwi z bazy danych.
+     *
+     * @return array Lista kolorów.
+     * @throws Exception W przypadku błędu podczas pobierania danych.
+     */
+
+    public function getColors(): array {
+        try {
+            $stmt = $this->conn->prepare('SELECT * FROM kolory');
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }catch(PDOException $e) {
+            throw new Exception('Błąd przy pobieraniu kolorów: '. $e->getMessage());
+        }
+    }
+
+    /**
+     * Pobiera listę dostępnych typów drzwi z bazy danych.
+     *
+     * @return array Lista typów drzwi.
+     * @throws Exception W przypadku błędu podczas pobierania danych.
+     */
+
+    public function getTypes(): array {
+        try {
+            $stmt = $this->conn->prepare('SELECT * FROM typy_drzwi');
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }catch(PDOException $e) {
+            throw new Exception('Błąd przy pobieraniu typów drzwi: '. $e->getMessage());
         }
     }
 }

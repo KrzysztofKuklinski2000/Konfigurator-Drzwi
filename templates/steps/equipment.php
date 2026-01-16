@@ -1,25 +1,19 @@
- <div class="border border-gray-300 rounded-lg p-6 bg-white shadow-md mt-8" >
+ <form action="/?save-equpment" method="POST">
+    <div class="border border-gray-300 rounded-lg p-6 bg-white shadow-md mt-8" >
         <div class="flex items-center gap-4 mb-4">
             <span class="block w-8 h-8 bg-blue-500 rounded "></span>
             <h2 class="uppercase text-xl">Wyposazenie</h2>
         </div>
         <div class="flex flex-col gap-4">
-            <div class="flex items-center gap-4">
-                <input type="checkbox" name="" id="lock" class="w-4 h-4">
-                <label for="lock" class="cursor-pointer text-sm">Zamek</label>
-            </div>
-            <div class="flex items-center gap-4">
-                <input type="checkbox" name="" id="pin" class="w-4 h-4">
-                <label for="pin" class="cursor-pointer text-sm">Bolec</label>
-            </div>
-            <div class="flex items-center gap-4">
-                <input type="checkbox" name="" id="glazing" class="w-4 h-4">
-                <label for="glazing" class="cursor-pointer text-sm">Przeszklenie</label>
-            </div>
-            <div class="flex items-center gap-4">
-                <input type="checkbox" name="" id="handle" class="w-4 h-4">
-                <label for="handle" class="cursor-pointer text-sm">Klamka</label>
-            </div>
+            <?php foreach ($data['accessories'] as $accessory): ?>
+                <div class="flex items-center gap-4">
+                    <input type="checkbox" name="accessories[]" value="<?= $accessory['id'] ?>" id="accessory-<?= $accessory['id'] ?>" class="w-4 h-4">
+                    <label for="accessory-<?= $accessory['id'] ?>" class="cursor-pointer text-sm"><?= htmlspecialchars($accessory['nazwa']) ?></label>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
-</div>
+    <button type="submit" class=" cursor-pointer p-4 bg-blue-500 rounded text-white font-bold mt-8 hover:bg-blue-600 transition">
+        Dalej
+    </button>
+</form>

@@ -5,4 +5,4 @@ use App\Controller\OrderController;
 use App\View;
 $get = $_GET;
 $controller = new OrderController( new View());
-$controller->dimensions();
+$controller->equipment();

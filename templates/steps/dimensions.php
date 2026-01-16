@@ -29,7 +29,7 @@
                     <input style="display:none" type="radio" name="opening_direction_id" value="<?= $direction['id'] ?>"  required>
                     
                     <div class="flex flex-col items-center gap-2 border border-gray-300 p-4 rounded-lg peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:bg-gray-100 transition h-full justify-center text-center">
-                        <p><?= $direction['nazwa'] ?></p>
+                        <p><?= htmlspecialchars($direction['nazwa'])?></p>
                     </div>
                 </label>
             <?php endforeach; ?>
