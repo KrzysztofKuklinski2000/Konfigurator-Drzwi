@@ -16,12 +16,13 @@ class OrderController extends AbstractController
         // Inicjalizacja repozytorium drzwi z połączeniem do bazy danych
         $this->doorRepository = new DoorRepository($this->getDbConnection());
     }
+    
     /**
      * Wyświetla widok dla wymiarów.
      *
      * @return void
      */
-    public function dimensions()
+    public function dimensions(): void
     {
         $this->view->render(
             [

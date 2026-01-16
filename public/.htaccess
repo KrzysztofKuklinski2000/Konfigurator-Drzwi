@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Jeśli plik lub katalog istnieje, nie przekierowuj (np. obrazki, css)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Wszystko inne kieruj do index.php
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>

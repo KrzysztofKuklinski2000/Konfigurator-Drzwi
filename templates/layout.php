@@ -16,26 +16,32 @@
             <p class="mb-4">Skonfiguruj swoje drzwi, wybierając spośród różnych opcji i dodatków.</p>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-8">
-            <div class="flex items-center justify-between border border-gray-300 rounded-xl p-3">
+    
+            <a href="/wymiary" class="flex items-center justify-between border border-gray-300 hover:bg-gray-50 cursor-pointer rounded-xl p-3 transition">
                 <span class="text-xs">Wymiary</span>
                 <span class="text-xl">1</span>
-            </div>
-            <div class="flex items-center justify-between border border-gray-300 rounded-xl p-3">
+            </a>
+
+            <a href="/model" class="flex items-center justify-between border border-gray-300 hover:bg-gray-50 cursor-pointer rounded-xl p-3 transition">
                 <span class="text-xs">Model</span>
                 <span class="text-xl">2</span>
-            </div>
-            <div class="flex items-center justify-between border border-gray-300 rounded-xl p-3">
-                <span class="text-xs">Wyposazenie</span>
+            </a>
+
+            <a href="/wyposazenie" class="flex items-center justify-between border border-gray-300 hover:bg-gray-50 cursor-pointer rounded-xl p-3 transition">
+                <span class="text-xs">Wyposażenie</span>
                 <span class="text-xl">3</span>
-            </div>
-            <div class="flex items-center justify-between border border-gray-300 rounded-xl p-3">
+            </a>
+
+            <div class="flex items-center justify-between border border-gray-200 text-gray-400 bg-gray-50 rounded-xl p-3 cursor-default">
                 <span class="text-xs">Podsumowanie</span>
                 <span class="text-xl">4</span>
             </div>
-            <div class="flex items-center justify-between border border-gray-300 rounded-xl p-3">
+
+            <div class="flex items-center justify-between border border-gray-200 text-gray-400 bg-gray-50 rounded-xl p-3 cursor-default">
                 <span class="text-xs">Zamówienie</span>
                 <span class="text-xl">5</span>
             </div>
+
         </div>
         <div class="mt-8">
             <?php 

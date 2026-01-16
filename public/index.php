@@ -1,8 +1,12 @@
 <?php
 require_once '../vendor/autoload.php';
 
-use App\Controller\OrderController;
 use App\View;
-$get = $_GET;
-$controller = new OrderController( new View());
-$controller->equipment();
+use App\Core\Router;
+use App\Core\Request;
+
+$request = new Request();
+$view = new View();
+
+$router = new Router($request, $view);
+$router->dispetch();

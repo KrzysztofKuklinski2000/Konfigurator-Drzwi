@@ -1,0 +1,1 @@
+Pamiętaj o .htaccess i jego konfiguracji :)
