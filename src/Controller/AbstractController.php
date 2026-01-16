@@ -3,8 +3,9 @@
 namespace App\Controller;
 
 use PDO;
-use App\Core\Database;
 use Exception;
+use App\Core\Request;
+use App\Core\Database;
 
 abstract class AbstractController
 {
@@ -14,6 +15,14 @@ abstract class AbstractController
      * @var PDO
      */
     private PDO $dbConnection;
+
+    /**
+     * Obiekt żądania HTTP.
+     *
+     * @var Request
+     */
+    protected Request $request;
+
     /**
      * Konstruktor nawiązuje połączenie z bazą danych.
      *
@@ -21,6 +30,8 @@ abstract class AbstractController
      */
     public function __construct()
     {
+        $this->request = new Request();
+
         try {
              $this->dbConnection = (new Database())->connect();
         }catch(Exception $e){
@@ -33,7 +44,7 @@ abstract class AbstractController
      *
      * @return PDO
      */
-    public function getDbConnection(): PDO
+    protected function getDbConnection(): PDO
     {
         return $this->dbConnection;
     }
