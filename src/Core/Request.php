@@ -7,6 +7,7 @@ class Request {
     private array $get;
     private array $post;
     private array $server;
+    private array $session;
 
     /** Konstruktor inicjalizuje dane żądania HTTP. */
     public function __construct()
@@ -14,6 +15,7 @@ class Request {
         $this->get = $_GET;
         $this->post = $_POST;
         $this->server = $_SERVER;
+        $this->session = &$_SESSION;
     }
 
     /** Zwraca dane zapytania GET lub pojedynczą wartość po nazwie. 
@@ -57,5 +59,27 @@ class Request {
         $url = $this->server['REQUEST_URI'] ?? '/';
 
         return parse_url($url, PHP_URL_PATH);
+    }
+
+    /** Zwraca dane sesji lub pojedynczą wartość po nazwie. 
+     * 
+     * @param string|null $name
+     * @return array|string|null
+     */
+    public function getSession(?string $name = null): array | string | null {
+        if ($name !== null) {
+            return $this->session[$name] ?? null;   
+        }
+        return $this->session;
+    }
+
+    /** Ustawia wartość w sesji pod podaną nazwą. 
+     * 
+     * @param string $name
+     * @param mixed $value
+     * @return void
+     */
+    public function setSession(string $name, mixed $value): void {
+        $this->session[$name] = $value;
     }
 }

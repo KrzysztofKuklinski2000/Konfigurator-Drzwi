@@ -1,4 +1,4 @@
-<form method="POST" action="/?save-dimensions">
+<form method="POST" action="/wymiary">
     <div class="border border-gray-300 rounded-lg p-6 bg-white shadow-md" >
         <div class="flex items-center gap-4 mb-4">
             <span class="block w-8 h-8 bg-blue-500 rounded "></span>

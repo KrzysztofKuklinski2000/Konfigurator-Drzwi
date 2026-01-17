@@ -5,6 +5,7 @@ use App\View;
 use App\Core\Router;
 use App\Core\Request;
 
+session_start();
 $request = new Request();
 $view = new View();
 

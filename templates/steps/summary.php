@@ -1,1 +1,1 @@
-<h1>Podsumowanie</h1>
+<?php print_r($data['order']); ?>

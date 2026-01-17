@@ -15,7 +15,7 @@
             <h2 class="text-xl font-semibold mb-4">Witamy w naszym konfiguratorze drzwi stalowych!</h2>
             <p class="mb-4">Skonfiguruj swoje drzwi, wybierając spośród różnych opcji i dodatków.</p>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-8">
+        <div class="js-links grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-8 ">
     
             <a href="/wymiary" class="flex items-center justify-between border border-gray-300 hover:bg-gray-50 cursor-pointer rounded-xl p-3 transition">
                 <span class="text-xs">Wymiary</span>
@@ -43,12 +43,13 @@
             </div>
 
         </div>
-        <div class="mt-8">
+        <div class="mt-8" id ="content">
             <?php 
                 $page = $data['page'] ?? 'equipment';
                 require_once dirname(__DIR__) . '/templates/steps/' . $page . '.php';
             ?>
         </div>
     </main>
+    <script src="/assets/js/main.js"></script>
 </body>
 </html>

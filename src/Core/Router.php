@@ -24,6 +24,7 @@ class Router {
             '/', '/wymiary' => $orderController->dimensions(),
             '/model' => $orderController->model(),
             '/wyposazenie' => $orderController->equipment(),
+            '/podsumowanie' => $orderController->summary(),
             default => print("404 - Nie znaleziono"),
         };
     }
