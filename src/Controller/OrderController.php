@@ -29,6 +29,8 @@ class OrderController extends AbstractController
             'accessories' => [],
         ];
 
+        $summaryPrice = 0;
+
         if (isset($order['openingDirection'])) {
             $openingDirection = $this->doorRepository->getOpeningDirectionById($order['openingDirection']);
             $summaryData['openingDirection'] = $openingDirection ? $openingDirection['nazwa'] : null;
@@ -37,18 +39,24 @@ class OrderController extends AbstractController
         if (isset($order['color'])) {
             $color = $this->doorRepository->getColorById($order['color']);
             $summaryData['color'] = $color ? $color['kod_hex'] : null;
+            $summaryPrice += $color ? $color['doplata'] : 0;
         }
 
         if (isset($order['type'])) {
             $type = $this->doorRepository->getTypeById($order['type']);
             $summaryData['type'] = $type ? $type['nazwa'] : null;
+            $summaryPrice += $type ? $type['cena_bazowa'] : 0;
         }
 
         if (!empty($order['accessories'])) {
             $summaryData['accessories'] = $this->doorRepository->getAccessoryByIds($order['accessories']);
+       
+            foreach ($summaryData['accessories'] as $accessory) {
+                $summaryPrice += $accessory['cena'];
+            }
         }
 
-        return $summaryData;
+        return ['summaryDetails' => $summaryData, 'summaryPrice' => $summaryPrice];
         
     }
     
@@ -75,12 +83,11 @@ class OrderController extends AbstractController
             header('Location: /model');
             exit();
         }
-
-        $this->render(
-            'dimensions',
-            [
+        $summaryData = $this->getSummaryData();
+        $this->render('dimensions', [
                 'openingDirections' => $this->doorRepository->getOpeningDirection(),
-                'summaryData' => $this->getSummaryData(),
+                'summaryData' => $summaryData['summaryDetails'],
+                'summaryPrice' => $summaryData['summaryPrice'],
             ]);
     }
 
@@ -105,10 +112,13 @@ class OrderController extends AbstractController
             exit();
         }
 
+        $summaryData = $this->getSummaryData();
+
         $this->render('model', [
             'colors' => $this->doorRepository->getColors(),
             'types' => $this->doorRepository->getTypes(),
-            'summaryData' => $this->getSummaryData(),
+            'summaryData' => $summaryData['summaryDetails'],
+            'summaryPrice' => $summaryData['summaryPrice'],
         ]);
     }
 
@@ -132,10 +142,11 @@ class OrderController extends AbstractController
             header('Location: /podsumowanie');
             exit();
         }
-
+        $summaryData = $this->getSummaryData();
         $this->render('equipment', [
             'accessories' => $this->doorRepository->getAccessories(),
-            'summaryData' => $this->getSummaryData(),
+            'summaryData' => $summaryData['summaryDetails'],
+            'summaryPrice' => $summaryData['summaryPrice'],
         ]);
     }
 

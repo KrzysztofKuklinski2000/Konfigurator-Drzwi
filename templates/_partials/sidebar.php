@@ -20,7 +20,7 @@
             <h3 class="text-gray-500 font-extralight text-sm">Model Drzwi</h3>
             <div class="flex justify-between items-center">
                 <span class="font-extralight text-sm">Kolor: </span>
-                <span style="background-color: <?= $data['summaryData']['color'] ?? 'none' ?>" class="w-3 h-3 block rounded-full border"></span>
+                <span style="background-color: <?= $data['summaryData']['color'] ?? 'none' ?>" class="w-4 h-4 block rounded-full border"></span>
             </div>
             <div class="flex justify-between items-center">
                 <span class="font-extralight text-sm">Typ: </span>
@@ -42,7 +42,7 @@
             <h3 class="text-gray-500 font-extralight text-sm">Podsumowanie</h3>
             <div class="flex justify-between items-center">
                 <span class="font-extralight text-sm">Cena: </span>
-                <span class="font-extralight text-sm">1234 zł</span>
+                <span class="font-extralight text-sm"><?= $data['summaryPrice'] ?> zł</span>
             </div>
         </li>
     </ul>
