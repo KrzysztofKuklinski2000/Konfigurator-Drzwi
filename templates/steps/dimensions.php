@@ -1,7 +1,5 @@
 <div class="flex flex-col md:flex-row gap-8 mt-8 items-start">
-    
     <form method="POST" action="/wymiary" class="w-full md:w-2/3">
-        
         <div class="border border-gray-300 rounded-lg p-6 bg-white shadow-md">
             <div class="flex items-center gap-4 mb-4">
                 <span class="block w-8 h-8 bg-blue-500 rounded"></span>
@@ -17,9 +15,10 @@
                         value="<?= htmlspecialchars($data['order']['width'] ?? '') ?>"
                         class="border border-gray-300 rounded p-2 pr-10 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     >
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">
-                        cm
-                    </span>
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">cm</span>
+                    <?php if(isset($data['errors']['width'])): ?>
+                        <p class="text-red-500 text-sm mt-1"><?= htmlspecialchars($data['errors']['width']) ?></p>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -32,9 +31,10 @@
                         value="<?= htmlspecialchars($data['order']['height'] ?? '') ?>"
                         class="border border-gray-300 rounded p-2 pr-10 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     >
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">
-                        cm
-                    </span>
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">cm</span>
+                    <?php if(isset($data['errors']['height'])): ?>
+                        <p class="text-red-500 text-sm mt-1"><?= htmlspecialchars($data['errors']['height']) ?></p>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -52,10 +52,9 @@
                         <input 
                             style="display:none" 
                             type="radio" 
-                            name="opening_direction_id" 
+                            name="openingDirectionId" 
                             value="<?= $direction['id'] ?>"  
-                            required 
-                            <?= (isset($data['order']['openingDirection']) && $data['order']['openingDirection'] == $direction['id']) ? 'checked' : '' ?> 
+                            <?= (isset($data['order']['openingDirectionId']) && $data['order']['openingDirectionId'] == $direction['id']) ? 'checked' : '' ?> 
                             class="peer"
                         >
                         
@@ -64,8 +63,11 @@
                         </div>
                     </label>
                 <?php endforeach; ?>
-
+                
             </div>
+            <?php if(isset($data['errors']['openingDirection'])): ?>
+                <p class="text-red-500 text-sm mt-2"><?= htmlspecialchars($data['errors']['openingDirection']) ?></p>
+            <?php endif; ?>
         </div>
 
         <button type="submit" class="p-4 bg-blue-500 rounded text-white font-bold mt-8 hover:bg-blue-600 transition shadow-lg w-full md:w-auto">

@@ -9,8 +9,8 @@ use App\Model\DoorRepository;
 class OrderController extends AbstractController
 {
     private DoorRepository $doorRepository;
-    public function __construct(Request $request, View $view, 
-    ){
+    public function __construct(Request $request, View $view, )
+    {
         parent::__construct($request, $view);
 
         // Inicjalizacja repozytorium drzwi z połączeniem do bazy danych
@@ -31,8 +31,8 @@ class OrderController extends AbstractController
 
         $summaryPrice = 0;
 
-        if (isset($order['openingDirection'])) {
-            $openingDirection = $this->doorRepository->getOpeningDirectionById($order['openingDirection']);
+        if (isset($order['openingDirectionId'])) {
+            $openingDirection = $this->doorRepository->getOpeningDirectionById($order['openingDirectionId']);
             $summaryData['openingDirection'] = $openingDirection ? $openingDirection['nazwa'] : null;
         }
 
@@ -67,28 +67,52 @@ class OrderController extends AbstractController
      */
     public function dimensions(): void
     {
+        $errors = [];
         if($this->request->getMethod() === 'POST'){
-            $currentData = $this->request->getSession('order') ?? [];
-
-            $newData = [
-                'width' => $this->request->getPost('width'),
-                'height' => $this->request->getPost('height'),
-                'openingDirection' => $this->request->getPost('opening_direction_id'),
-            ];
-
-            $order = array_merge($currentData, $newData);
-
-            $this->request->setSession('order', $order);
+            $width = (int) $this->request->getPost('width');
+            $height = (int) $this->request->getPost('height');
+            $openingDirectionId = (int) $this->request->getPost('openingDirectionId');
             
-            header('Location: /model');
-            exit();
+            // Walidacja danych
+            if($width <= 80 || $width >= 120){
+                $errors['width'] = 'Szerokość musi być między 80 a 120 cm.';
+            }
+
+            if($height <= 200 || $height >= 250){
+                $errors['height'] = 'Wysokość musi być między 200 a 250 cm.';
+            }
+
+            if(!$openingDirectionId){
+                $errors['openingDirection'] = 'Wybierz kierunek otwierania drzwi.';
+            }
+
+            // Jeśli brak błędów, zapisz dane do sesji i przekieruj do następnego kroku
+            if(empty($errors)){
+                $currentData = $this->request->getSession('order') ?? [];
+                
+                $newData = [
+                    'width' => $width,
+                    'height' => $height,
+                    'openingDirectionId' => $openingDirectionId,
+                ];
+
+                
+                $order = array_merge($currentData, $newData);
+                $this->request->setSession('order', $order);
+
+                header('Location: /model');
+                exit();
+            }
         }
+
         $summaryData = $this->getSummaryData();
+
         $this->render('dimensions', [
-                'openingDirections' => $this->doorRepository->getOpeningDirection(),
-                'summaryData' => $summaryData['summaryDetails'],
-                'summaryPrice' => $summaryData['summaryPrice'],
-            ]);
+            'openingDirections' => $this->doorRepository->getOpeningDirection(),
+            'summaryData' => $summaryData['summaryDetails'],
+            'summaryPrice' => $summaryData['summaryPrice'],
+            'errors' => $errors,
+        ]);
     }
 
     /**
