@@ -18,7 +18,7 @@ class Router {
     public function dispetch(): void {
         $path = $this->request->getUri();
 
-        $orderController = new OrderController($this->view);
+        $orderController = new OrderController($this->request, $this->view);
 
         match($path) {
             '/', '/wymiary' => $orderController->dimensions(),

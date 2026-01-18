@@ -2,19 +2,54 @@
 
 namespace App\Controller;
 
-use App\Model\DoorRepository;
 use App\View;
+use App\Core\Request;
+use App\Model\DoorRepository;
 
 class OrderController extends AbstractController
 {
     private DoorRepository $doorRepository;
-    public function __construct(
-        private View $view
+    public function __construct(Request $request, View $view, 
     ){
-        parent::__construct();
+        parent::__construct($request, $view);
 
         // Inicjalizacja repozytorium drzwi z połączeniem do bazy danych
         $this->doorRepository = new DoorRepository($this->getDbConnection());
+    }
+
+    private function getSummaryData(): array {
+        $order = $this->request->getSession('order') ?? [];
+
+        $summaryData = [
+            'width' => $order['width'] ?? null,
+            'height' => $order['height'] ?? null,
+            'openingDirection' => null,
+            'color' => null,
+            'type' => null,
+            'accessories' => [],
+        ];
+
+        if (isset($order['openingDirection'])) {
+            $openingDirection = $this->doorRepository->getOpeningDirectionById($order['openingDirection']);
+            $summaryData['openingDirection'] = $openingDirection ? $openingDirection['nazwa'] : null;
+        }
+
+        if (isset($order['color'])) {
+            $color = $this->doorRepository->getColorById($order['color']);
+            $summaryData['color'] = $color ? $color['kod_hex'] : null;
+        }
+
+        if (isset($order['type'])) {
+            $type = $this->doorRepository->getTypeById($order['type']);
+            $summaryData['type'] = $type ? $type['nazwa'] : null;
+        }
+
+        if (!empty($order['accessories'])) {
+            $summaryData['accessories'] = $this->doorRepository->getAccessoryByIds($order['accessories']);
+        }
+
+        return $summaryData;
+        
     }
     
     /**
@@ -26,6 +61,7 @@ class OrderController extends AbstractController
     {
         if($this->request->getMethod() === 'POST'){
             $currentData = $this->request->getSession('order') ?? [];
+
             $newData = [
                 'width' => $this->request->getPost('width'),
                 'height' => $this->request->getPost('height'),
@@ -40,12 +76,12 @@ class OrderController extends AbstractController
             exit();
         }
 
-        $this->view->render(
+        $this->render(
+            'dimensions',
             [
-                'page' => 'dimensions',
                 'openingDirections' => $this->doorRepository->getOpeningDirection(),
-            ]
-        );
+                'summaryData' => $this->getSummaryData(),
+            ]);
     }
 
     /**
@@ -69,10 +105,10 @@ class OrderController extends AbstractController
             exit();
         }
 
-        $this->view->render([
-            'page' => 'model',
+        $this->render('model', [
             'colors' => $this->doorRepository->getColors(),
             'types' => $this->doorRepository->getTypes(),
+            'summaryData' => $this->getSummaryData(),
         ]);
     }
 
@@ -97,9 +133,9 @@ class OrderController extends AbstractController
             exit();
         }
 
-        $this->view->render([
-            'page' => 'equipment',
+        $this->render('equipment', [
             'accessories' => $this->doorRepository->getAccessories(),
+            'summaryData' => $this->getSummaryData(),
         ]);
     }
 
@@ -111,7 +147,6 @@ class OrderController extends AbstractController
     public function summary(): void {
         $this->view->render([
             'page' => 'summary',
-            'order' => $this->request->getSession('order'),
         ]);
     }
 }

@@ -6,6 +6,7 @@ use PDO;
 use Exception;
 use App\Core\Request;
 use App\Core\Database;
+use App\View;
 
 abstract class AbstractController
 {
@@ -17,27 +18,33 @@ abstract class AbstractController
     private PDO $dbConnection;
 
     /**
-     * Obiekt żądania HTTP.
-     *
-     * @var Request
-     */
-    protected Request $request;
-
-    /**
      * Konstruktor nawiązuje połączenie z bazą danych.
      *
      * @throws Exception
      */
-    public function __construct()
+    public function __construct(protected Request $request, protected View $view)
     {
-        $this->request = new Request();
-
         try {
              $this->dbConnection = (new Database())->connect();
         }catch(Exception $e){
             throw new Exception(message: 'Błąd przy połączeniu z bazą danych ' . $e->getMessage());
         }
     }
+    
+    /**
+     * Renderuje widok z danymi.
+     *
+     * @param string $page
+     * @param array $data
+     * @return void
+     */
+    protected function render(string $page, $data = []): void
+    {
+        $order = $this->request->getSession('order') ?? [];    
+        $fullData = array_merge($data, ['order' => $order, 'page' => $page]);
+
+        $this->view->render($fullData);
+    }   
 
     /**
      * Zwraca połączenie z bazą danych.
