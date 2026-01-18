@@ -1,5 +1,4 @@
 <div class="flex flex-col md:flex-row gap-8 mt-8 items-start">
-
     <form action="/model" method="POST" class="w-full md:w-2/3">
         <div class="border border-gray-300 rounded-lg p-6 bg-white shadow-md">
             <div class="flex items-center gap-4 mb-4">
@@ -12,11 +11,10 @@
                         <input 
                                 style="display:none" 
                                 type="radio" 
-                                name="door_color" 
+                                name="colorId" 
                                 value="<?= $color['id'] ?>"  
-                                required
                                 class="peer"
-                                <?= (isset($data['order']['color']) && $data['order']['color'] == $color['id']) ? 'checked' : '' ?> 
+                                <?= (isset($data['order']['colorId']) && $data['order']['colorId'] == $color['id']) ? 'checked' : '' ?> 
                             >
                         <div class="flex flex-col items-center gap-2 border border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-100 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">
                             <span style="background-color: <?= $color['kod_hex'] ?>" class="block w-16 h-16 rounded-full border "></span>
@@ -26,6 +24,9 @@
                     </label>
                 <?php endforeach; ?>
             </div>
+            <?php if(isset($data['errors']['color'])): ?>
+                <p class="text-red-500 text-sm mt-2"><?= htmlspecialchars($data['errors']['color']) ?></p>
+            <?php endif; ?>
         </div>
 
         <div class="border border-gray-300 rounded-lg p-6 bg-white shadow-md mt-8">
@@ -39,11 +40,10 @@
                         <input 
                             style="display:none" 
                             type="radio" 
-                            name="type_id" 
+                            name="typeId" 
                             value="<?= $type['id'] ?>"  
-                            required
                             class="peer"
-                            <?= (isset($data['order']['type']) && $data['order']['type'] == $type['id']) ? 'checked' : '' ?> 
+                            <?= (isset($data['order']['typeId']) && $data['order']['typeId'] == $type['id']) ? 'checked' : '' ?> 
                         >
                         
                         <div class="flex flex-col items-center gap-2 border border-gray-300 p-4 rounded-lg peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:bg-gray-100 transition h-full justify-center text-center">
@@ -53,6 +53,9 @@
                     </label>
                 <?php endforeach; ?>
             </div>
+            <?php if(isset($data['errors']['type'])): ?>
+                <p class="text-red-500 text-sm mt-2"><?= htmlspecialchars($data['errors']['type']) ?></p>
+            <?php endif; ?>
         </div>
         <button type="submit" class=" cursor-pointer p-4 bg-blue-500 rounded text-white font-bold mt-8 hover:bg-blue-600 transition">
             Dalej

@@ -36,14 +36,14 @@ class OrderController extends AbstractController
             $summaryData['openingDirection'] = $openingDirection ? $openingDirection['nazwa'] : null;
         }
 
-        if (isset($order['color'])) {
-            $color = $this->doorRepository->getColorById($order['color']);
+        if (isset($order['colorId'])) {
+            $color = $this->doorRepository->getColorById($order['colorId']);
             $summaryData['color'] = $color ? $color['kod_hex'] : null;
             $summaryPrice += $color ? $color['doplata'] : 0;
         }
 
-        if (isset($order['type'])) {
-            $type = $this->doorRepository->getTypeById($order['type']);
+        if (isset($order['typeId'])) {
+            $type = $this->doorRepository->getTypeById($order['typeId']);
             $summaryData['type'] = $type ? $type['nazwa'] : null;
             $summaryPrice += $type ? $type['cena_bazowa'] : 0;
         }
@@ -67,39 +67,29 @@ class OrderController extends AbstractController
      */
     public function dimensions(): void
     {
+        $order = $this->request->getSession('order') ?? [];
         $errors = [];
         if($this->request->getMethod() === 'POST'){
-            $width = (int) $this->request->getPost('width');
-            $height = (int) $this->request->getPost('height');
-            $openingDirectionId = (int) $this->request->getPost('openingDirectionId');
+            $order['width'] = (int) $this->request->getPost('width');
+            $order['height'] = (int) $this->request->getPost('height');
+            $order['openingDirectionId'] = (int) $this->request->getPost('openingDirectionId');
             
             // Walidacja danych
-            if($width <= 80 || $width >= 120){
+            if( $order['width'] <= 80 ||  $order['width'] >= 120){
                 $errors['width'] = 'Szerokość musi być między 80 a 120 cm.';
             }
 
-            if($height <= 200 || $height >= 250){
+            if($order['height'] <= 200 || $order['height'] >= 250){
                 $errors['height'] = 'Wysokość musi być między 200 a 250 cm.';
             }
 
-            if(!$openingDirectionId){
+            if(!$order['openingDirectionId']){
                 $errors['openingDirection'] = 'Wybierz kierunek otwierania drzwi.';
             }
 
             // Jeśli brak błędów, zapisz dane do sesji i przekieruj do następnego kroku
             if(empty($errors)){
-                $currentData = $this->request->getSession('order') ?? [];
-                
-                $newData = [
-                    'width' => $width,
-                    'height' => $height,
-                    'openingDirectionId' => $openingDirectionId,
-                ];
-
-                
-                $order = array_merge($currentData, $newData);
                 $this->request->setSession('order', $order);
-
                 header('Location: /model');
                 exit();
             }
@@ -112,6 +102,7 @@ class OrderController extends AbstractController
             'summaryData' => $summaryData['summaryDetails'],
             'summaryPrice' => $summaryData['summaryPrice'],
             'errors' => $errors,
+            'order' => $order
         ]);
     }
 
@@ -121,19 +112,22 @@ class OrderController extends AbstractController
      * @return void
      */
     public function model(): void {
+        $errors = [];
+        $order = $this->request->getSession('order') ?? [];
         if($this->request->getMethod() === 'POST'){
-            $currentData = $this->request->getSession('order') ?? [];
-            $newData = [
-                'color' => $this->request->getPost('door_color'),
-                'type' => $this->request->getPost('type_id'),
-            ];
+            $order['colorId'] = $this->request->getPost('colorId');
+            $order['typeId'] = $this->request->getPost('typeId');
 
-            $order = array_merge($currentData, $newData);
 
-            $this->request->setSession('order', $order);
-            
-            header('Location: /wyposazenie');
-            exit();
+            if(!$order['colorId']) $errors['color'] = "Wybierz kolor drzwi";
+            if(!$order['typeId']) $errors['type'] = "Wybierz typ drzwi";
+
+            if(empty($errors)) {
+                $this->request->setSession('order', $order);
+                header('Location: /wyposazenie');
+                exit();
+
+            }
         }
 
         $summaryData = $this->getSummaryData();
@@ -143,6 +137,8 @@ class OrderController extends AbstractController
             'types' => $this->doorRepository->getTypes(),
             'summaryData' => $summaryData['summaryDetails'],
             'summaryPrice' => $summaryData['summaryPrice'],
+            'errors' => $errors,
+            'order' => $order
         ]);
     }
 
@@ -153,16 +149,13 @@ class OrderController extends AbstractController
      */
 
     public function equipment(): void {
+        $order = $this->request->getSession('order') ?? [];
         if($this->request->getMethod() === 'POST'){
-            $currentData = $this->request->getSession('order') ?? [];
-            $newData = [
-                'accessories' => $this->request->getPost('accessories'),
-            ];
+            
+            $order['accessories'] = $this->request->getPost('accessories') ?? [];
 
-            $order = array_merge($currentData, $newData);
 
             $this->request->setSession('order', $order);
-            
             header('Location: /podsumowanie');
             exit();
         }
@@ -171,6 +164,7 @@ class OrderController extends AbstractController
             'accessories' => $this->doorRepository->getAccessories(),
             'summaryData' => $summaryData['summaryDetails'],
             'summaryPrice' => $summaryData['summaryPrice'],
+            'order' => $order
         ]);
     }
 

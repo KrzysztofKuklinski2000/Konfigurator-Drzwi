@@ -27,7 +27,7 @@ abstract class AbstractController
         try {
              $this->dbConnection = (new Database())->connect();
         }catch(Exception $e){
-            throw new Exception(message: 'Błąd przy połączeniu z bazą danych ' . $e->getMessage());
+            throw new Exception('Błąd przy połączeniu z bazą danych ' . $e->getMessage());
         }
     }
     
@@ -41,7 +41,7 @@ abstract class AbstractController
     protected function render(string $page, $data = []): void
     {
         $order = $this->request->getSession('order') ?? [];    
-        $fullData = array_merge($data, ['order' => $order, 'page' => $page]);
+        $fullData = array_merge(['order' => $order, 'page' => $page], $data);
 
         $this->view->render($fullData);
     }   
