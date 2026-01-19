@@ -25,6 +25,8 @@ class Router {
             '/model' => $orderController->model(),
             '/wyposazenie' => $orderController->equipment(),
             '/podsumowanie' => $orderController->summary(),
+            '/zamowienie' => $orderController->order(),
+            '/dziekujemy' => $orderController->success(),
             default => print("404 - Nie znaleziono"),
         };
     }

@@ -163,4 +163,67 @@ class DoorRepository
             throw new Exception('Błąd przy pobieraniu akcesoriów: '. $e->getMessage());
         }
     }
+
+    
+    
+    public function getDeliveryMethods(): array {
+        try{
+            $stmt = $this->conn->prepare("SELECT * FROM metody_dostawy");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }catch(PDOException $e){
+            throw new Exception('Błąd przy pobieraniu akcesoriów: ' . $e->getMessage());
+        }
+    }
+
+    public function saveOrder(array $sessionData, float $totalPrice, float $deliveryPrice, float $productsPrice): int {
+        try {
+            $this->conn->beginTransaction();
+            $sql = "INSERT INTO zamowienia 
+                (szerokosc, wysokosc, kierunek_id, kolor_id, typ_id, metoda_dostawy_id, 
+                 imie, nazwisko, email, telefon, adres, kod_pocztowy, miasto, 
+                 cena_produktow, cena_dostawy, cena_calkowita, data_utworzenia) 
+                VALUES 
+                (:width, :height, :dir_id, :color_id, :type_id, :delivery_id,
+                 :fname, :lname, :email, :phone, :address, :postal, :city,
+                 :price_products, :price_delivery, :price_total, NOW())";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([
+                ':width'    => $sessionData['width'],
+                ':height'   => $sessionData['height'],
+                ':dir_id'   => $sessionData['openingDirectionId'],
+                ':color_id' => $sessionData['colorId'],
+                ':type_id'  => $sessionData['typeId'],
+                ':delivery_id' => $sessionData['deliveryMethodId'],
+                ':fname'    => $sessionData['firstName'],
+                ':lname'    => $sessionData['lastName'],
+                ':email'    => $sessionData['email'],
+                ':phone'    => $sessionData['phone'],
+                ':address'  => $sessionData['address'],
+                ':postal'   => $sessionData['postalCode'],
+                ':city'     => $sessionData['city'],
+
+                ':price_products' => $productsPrice,
+                ':price_delivery' => $deliveryPrice,
+                ':price_total'    => $totalPrice
+            ]);
+
+            $orderId = $this->conn->lastInsertId();
+
+            if($sessionData['accessories']) {
+                $sql ="INSERT INTO zamowienia_akcesoria (zamowienie_id, akcesorium_id) VALUES (:orderId, :accId)";
+                $stmtAcc = $this->conn->prepare($sql);
+                foreach($sessionData['accessories'] as $accId) {
+                    $stmtAcc->execute([':orderId' => $orderId, ':accId' => $accId]);
+                }
+            }
+            
+            $this->conn->commit();
+            return (int) $orderId;
+        }catch(PDOException $e) {
+            $this->conn->rollBack();
+            throw new Exception('Nie udało się zapisać zamówienia.'. $e->getMessage());
+        }
+    }
 }

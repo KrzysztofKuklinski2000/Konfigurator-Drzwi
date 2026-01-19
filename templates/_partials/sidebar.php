@@ -46,4 +46,9 @@
             </div>
         </li>
     </ul>
+    <form action="/podsumowanie" method="POST">
+        <button type="submit" class="w-full p-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg text-lg transition shadow-lg transform cursor-pointer">
+            Podsumowanie
+        </button>
+    </form>
 </div>

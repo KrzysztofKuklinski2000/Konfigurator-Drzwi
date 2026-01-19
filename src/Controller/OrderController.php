@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\View;
+use Exception;
 use App\Core\Request;
 use App\Model\DoorRepository;
 
@@ -174,8 +175,106 @@ class OrderController extends AbstractController
      * @return void
      */
     public function summary(): void {
-        $this->view->render([
-            'page' => 'summary',
+        $order = $this->request->getSession('order') ?? [];
+
+        $missingData = 
+            empty($order['width']) || 
+            empty($order['height']) || 
+            empty($order['openingDirectionId']) || 
+            empty($order['colorId']) || 
+            empty($order['typeId']);
+
+        if($missingData) {
+            header('Location: /wymiary');
+        }
+
+        $summaryData = $this->getSummaryData();
+
+        $this->render('summary',[
+            'summaryData' => $summaryData['summaryDetails'],
+            'summaryPrice' => $summaryData['summaryPrice'],
         ]);
+    }
+
+    public function order(): void {
+        try{
+            $order = $this->request->getSession('order') ?? [];
+
+            $missingData = 
+                empty($order['width']) || 
+                empty($order['height']) || 
+                empty($order['openingDirectionId']) || 
+                empty($order['colorId']) || 
+                empty($order['typeId']);
+
+            if($missingData) {
+                header('Location: /wymiary');
+                exit();
+            }
+
+            $errors = [];
+
+            if($this->request->getMethod() === 'POST') {
+                $order['deliveryMethodId'] = (int) $this->request->getPost('deliveryMethodId');
+                $order['firstName'] = trim($this->request->getPost('firstName'));
+                $order['lastName']  = trim($this->request->getPost('lastName'));
+                $order['email']     = trim($this->request->getPost('email'));
+                $order['phone']     = trim($this->request->getPost('phone'));
+                $order['address']   = trim($this->request->getPost('address'));
+                $order['postalCode']= trim($this->request->getPost('postalCode'));
+                $order['city']      = trim($this->request->getPost('city'));
+
+                if(!$order['deliveryMethodId']) $errors['deliveryMethodId'] = 'Wybierz metodę dostawy';
+                if(!$order['firstName']) $errors['firstName'] = 'Podaj imię';
+                if(!$order['lastName'])  $errors['lastName'] = 'Podaj nazwisko';
+                if(!$order['email'])     $errors['email'] = 'Podaj email';
+                if(!$order['phone'])     $errors['phone'] = 'Podaj telefon';
+                if(!$order['address'])   $errors['address'] = 'Podaj adres';
+                if(!$order['postalCode'])$errors['postalCode'] = 'Podaj kod pocztowy';
+                if(!$order['city'])      $errors['city'] = 'Podaj miasto';
+
+                
+                if(empty($errors)) {
+                    $summaryData = $this->getSummaryData();
+                    $productsPrice = $summaryData['summaryPrice'];
+
+                    $deliveryMethods = $this->doorRepository->getDeliveryMethods();
+                    $deliveryPrice = 0;
+                    foreach($deliveryMethods as $deliveryMethod) {
+                        if($deliveryMethod['id'] === $order['deliveryMethodId']) {
+                            $deliveryPrice = $deliveryMethod['cena'];
+                            break;
+                        }
+                    }
+
+                    $finalePrice = ($productsPrice + $deliveryPrice);
+                    $orderId = $this->doorRepository->saveOrder($order, $finalePrice, $deliveryPrice, $productsPrice);
+
+                    $this->request->setSession('order', []);
+
+                    header('Location: /dziekujemy?id=' . $orderId);
+                    exit();
+                }
+
+                $this->request->setSession('order', $order);
+            }
+
+            $summaryData = $this->getSummaryData();
+
+            $this->render('order', [
+                'summaryData' => $summaryData['summaryDetails'],
+                'summaryPrice' => $summaryData['summaryPrice'],
+                'deliveryMethods' => $this->doorRepository->getDeliveryMethods(),
+                'order' => $order,
+                'errors' => $errors,
+            ]);
+        }catch(Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    public function success(): void {
+        $id = $this->request->getQuery('id') ?? 0;
+        $this->render('success', ['orderId' => $id]);
     }
 }
