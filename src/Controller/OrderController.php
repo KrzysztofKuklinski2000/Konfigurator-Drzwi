@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Core\Validator;
 use App\Service\OrderService;
 use App\View;
 use Exception;
@@ -13,6 +14,7 @@ class OrderController extends AbstractController
 {
     private DoorRepository $doorRepository;
     private OrderService $orderService;
+    private Validator $validator;
     public function __construct(Request $request, View $view, )
     {
         parent::__construct($request, $view);
@@ -20,6 +22,7 @@ class OrderController extends AbstractController
         // Inicjalizacja repozytorium drzwi z połączeniem do bazy danych
         $this->doorRepository = new DoorRepository($this->getDbConnection());
         $this->orderService = new OrderService($request, $this->doorRepository);
+        $this->validator = new Validator();
     }
     
     /**
@@ -31,30 +34,18 @@ class OrderController extends AbstractController
     {
         $order = $this->request->getSession('order') ?? [];
         $errors = [];
+
         if($this->request->getMethod() === 'POST'){
-            $order['width'] = (int) $this->request->getPost('width');
-            $order['height'] = (int) $this->request->getPost('height');
-            $order['openingDirectionId'] = (int) $this->request->getPost('openingDirectionId');
-            
-            // Walidacja danych
-            if( $order['width'] <= 80 ||  $order['width'] >= 120){
-                $errors['width'] = 'Szerokość musi być między 80 a 120 cm.';
-            }
+            $formData = $this->getDimensionsData();
+            $errors = $this->validator->validateDimensions($formData);
+            $order = array_merge($order, $formData);
 
-            if($order['height'] <= 200 || $order['height'] >= 250){
-                $errors['height'] = 'Wysokość musi być między 200 a 250 cm.';
-            }
-
-            if(!$order['openingDirectionId']){
-                $errors['openingDirection'] = 'Wybierz kierunek otwierania drzwi.';
-            }
-
-            // Jeśli brak błędów, zapisz dane do sesji i przekieruj do następnego kroku
             if(empty($errors)){
                 $this->request->setSession('order', $order);
                 header('Location: /model');
                 exit();
             }
+            $this->request->setSession('order', $order);
         }
 
         $summaryData = $this->orderService->getSummaryData();
@@ -76,20 +67,17 @@ class OrderController extends AbstractController
     public function model(): void {
         $errors = [];
         $order = $this->request->getSession('order') ?? [];
+
         if($this->request->getMethod() === 'POST'){
-            $order['colorId'] = $this->request->getPost('colorId');
-            $order['typeId'] = $this->request->getPost('typeId');
-
-
-            if(!$order['colorId']) $errors['color'] = "Wybierz kolor drzwi";
-            if(!$order['typeId']) $errors['type'] = "Wybierz typ drzwi";
+            $formData = $this->getModelData();
+            $errors = $this->validator->validateModel($formData);
 
             if(empty($errors)) {
                 $this->request->setSession('order', $order);
                 header('Location: /wyposazenie');
                 exit();
-
             }
+            $this->request->setSession('order', $order);
         }
 
         $summaryData = $this->orderService->getSummaryData();
@@ -113,15 +101,15 @@ class OrderController extends AbstractController
     public function equipment(): void {
         $order = $this->request->getSession('order') ?? [];
         if($this->request->getMethod() === 'POST'){
-            
             $order['accessories'] = $this->request->getPost('accessories') ?? [];
-
 
             $this->request->setSession('order', $order);
             header('Location: /podsumowanie');
             exit();
         }
+
         $summaryData = $this->orderService->getSummaryData();
+
         $this->render('equipment', [
             'accessories' => $this->doorRepository->getAccessories(),
             'summaryData' => $summaryData['summaryDetails'],
@@ -153,24 +141,9 @@ class OrderController extends AbstractController
             $errors = [];
 
             if($this->request->getMethod() === 'POST') {
-                $order['deliveryMethodId'] = (int) $this->request->getPost('deliveryMethodId');
-                $order['firstName'] = trim($this->request->getPost('firstName'));
-                $order['lastName']  = trim($this->request->getPost('lastName'));
-                $order['email']     = trim($this->request->getPost('email'));
-                $order['phone']     = trim($this->request->getPost('phone'));
-                $order['address']   = trim($this->request->getPost('address'));
-                $order['postalCode']= trim($this->request->getPost('postalCode'));
-                $order['city']      = trim($this->request->getPost('city'));
-
-                if(!$order['deliveryMethodId']) $errors['deliveryMethodId'] = 'Wybierz metodę dostawy';
-                if(!$order['firstName']) $errors['firstName'] = 'Podaj imię';
-                if(!$order['lastName'])  $errors['lastName'] = 'Podaj nazwisko';
-                if(!$order['email'])     $errors['email'] = 'Podaj email';
-                if(!$order['phone'])     $errors['phone'] = 'Podaj telefon';
-                if(!$order['address'])   $errors['address'] = 'Podaj adres';
-                if(!$order['postalCode'])$errors['postalCode'] = 'Podaj kod pocztowy';
-                if(!$order['city'])      $errors['city'] = 'Podaj miasto';
-
+                $formData = $this->getUserData();
+                $errors = $this->validator->validateUserData($formData);
+                $order = array_merge($order, $formData);
                 
                 if(empty($errors)) {
                     
@@ -191,6 +164,7 @@ class OrderController extends AbstractController
                 'order' => $order,
                 'errors' => $errors,
             ]);
+            
         }catch(Exception $e) {
             echo $e->getMessage();
         }
@@ -285,5 +259,36 @@ class OrderController extends AbstractController
         } catch (\Mpdf\MpdfException $e) {
             echo "Błąd generowania PDF: " . $e->getMessage();
         }
+    }
+
+    private function getDimensionsData(): array 
+    {
+        return [
+            'width' => (int) $this->request->getPost('width'),
+            'height' => (int) $this->request->getPost('height'),
+            'openingDirectionId' => (int) $this->request->getPost('openingDirectionId'),
+        ];
+    }
+
+    private function getModelData(): array 
+    {
+        return [
+            'colorId' => (int) $this->request->getPost('colorId'), 
+            'typeId'  => (int) $this->request->getPost('typeId'),
+        ];
+    }
+
+    private function getUserData(): array 
+    {
+        return [
+            'deliveryMethodId' => (int) $this->request->getPost('deliveryMethodId'),
+            'firstName'        => trim($this->request->getPost('firstName')),
+            'lastName'         => trim($this->request->getPost('lastName')),
+            'email'            => trim($this->request->getPost('email')),
+            'phone'            => trim($this->request->getPost('phone')),
+            'address'          => trim($this->request->getPost('address')),
+            'postalCode'       => trim($this->request->getPost('postalCode')),
+            'city'             => trim($this->request->getPost('city')),
+        ];
     }
 }
