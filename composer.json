@@ -4,5 +4,7 @@
             "App\\": "src/"
         }
     },
-    "require": {}
+    "require": {
+        "mpdf/mpdf": "^8.2"
+    }
 }
