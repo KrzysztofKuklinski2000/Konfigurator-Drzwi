@@ -2,7 +2,6 @@
 require_once '../vendor/autoload.php';
 
 use App\View;
-use Exception;
 use App\Core\Router;
 use App\Core\Request;
 

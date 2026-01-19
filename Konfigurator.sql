@@ -31,7 +31,7 @@ CREATE TABLE `akcesoria` (
   `id` int NOT NULL COMMENT 'Klucz główny',
   `nazwa` varchar(100) NOT NULL COMMENT 'Nazwa produktu',
   `cena` decimal(10,2) NOT NULL COMMENT 'Cena za produkt dodatkowy'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `akcesoria`
@@ -52,7 +52,7 @@ INSERT INTO `akcesoria` (`id`, `nazwa`, `cena`) VALUES
 CREATE TABLE `kierunek_otwierania` (
   `id` int NOT NULL COMMENT 'Klucz główny',
   `nazwa` varchar(100) NOT NULL COMMENT 'Lewe Otwieranie Do Wewnątrz'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `kierunek_otwierania`
@@ -75,7 +75,7 @@ CREATE TABLE `kolory` (
   `nazwa` varchar(50) NOT NULL COMMENT 'Nazwa koloru',
   `kod_hex` varchar(7) NOT NULL COMMENT 'Kod koloru np #FFFFFF',
   `doplata` decimal(10,2) NOT NULL COMMENT 'Kwota doliczana do ceny podstawowej'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `kolory`
@@ -101,7 +101,7 @@ CREATE TABLE `metody_dostawy` (
   `id` int NOT NULL,
   `nazwa` varchar(255) NOT NULL,
   `cena` decimal(10,2) NOT NULL DEFAULT '0.00'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `metody_dostawy`
@@ -122,7 +122,7 @@ CREATE TABLE `typy_drzwi` (
   `id` int NOT NULL COMMENT 'Klucz główny',
   `nazwa` varchar(255) NOT NULL COMMENT 'Nazwa modelu np Premium Zewnętrzne',
   `cena_bazowa` decimal(10,2) NOT NULL COMMENT 'Cena podstawowa bez dodatków'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `typy_drzwi`
@@ -159,7 +159,7 @@ CREATE TABLE `zamowienia` (
   `cena_dostawy` decimal(10,2) NOT NULL,
   `cena_calkowita` decimal(10,2) NOT NULL,
   `data_utworzenia` datetime DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `zamowienia`
@@ -179,7 +179,7 @@ INSERT INTO `zamowienia` (`id`, `szerokosc`, `wysokosc`, `kierunek_id`, `kolor_i
 CREATE TABLE `zamowienia_akcesoria` (
   `zamowienie_id` int NOT NULL,
   `akcesorium_id` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `zamowienia_akcesoria`
