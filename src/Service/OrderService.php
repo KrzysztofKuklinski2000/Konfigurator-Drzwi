@@ -97,4 +97,26 @@ class OrderService {
             exit();
         }
     }
+
+    public function getDeliveryDetails(?int $methodId): array
+    {
+        $default = ['price' => 0, 'name' => 'Nie wybrano'];
+
+        if (!$methodId) {
+            return $default;
+        }
+
+        $methods = $this->doorRepository->getDeliveryMethods();
+
+        foreach ($methods as $method) {
+            if ($method['id'] === $methodId) {
+                return [
+                    'price' => (float) $method['cena'],
+                    'name'  => $method['nazwa']
+                ];
+            }
+        }
+        
+        return $default;
+    }
 }

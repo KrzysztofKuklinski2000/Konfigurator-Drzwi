@@ -102,7 +102,7 @@ class DoorRepository
         try {
             $stmt = $this->conn->prepare('SELECT * FROM kolory WHERE id = :id');
             $stmt->execute(['id' => $id]);
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
         }catch(PDOException $e) {
             throw new Exception('Błąd przy pobieraniu kolorów: '. $e->getMessage());
         }
@@ -119,7 +119,7 @@ class DoorRepository
         try {
             $stmt = $this->conn->prepare('SELECT * FROM typy_drzwi WHERE id = :id');
             $stmt->execute(['id' => $id]);
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
         }catch(PDOException $e) {
             throw new Exception('Błąd przy pobieraniu typów drzwi: '. $e->getMessage());
         }
@@ -136,7 +136,7 @@ class DoorRepository
         try {
             $stmt = $this->conn->prepare('SELECT * FROM kierunek_otwierania WHERE id = :id');
             $stmt->execute(['id' => $id]);
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
         }catch(PDOException $e) {
             throw new Exception('Błąd przy pobieraniu kierunków otwierania: '. $e->getMessage());
         }
@@ -158,7 +158,7 @@ class DoorRepository
             $in  = str_repeat('?,', count($ids)-1) . '?';
             $stmt = $this->conn->prepare("SELECT * FROM akcesoria WHERE id IN ($in)");
             $stmt->execute($ids);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: null;
         }catch(PDOException $e) {
             throw new Exception('Błąd przy pobieraniu akcesoriów: '. $e->getMessage());
         }
@@ -170,7 +170,7 @@ class DoorRepository
         try{
             $stmt = $this->conn->prepare("SELECT * FROM metody_dostawy");
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: null;
         }catch(PDOException $e){
             throw new Exception('Błąd przy pobieraniu akcesoriów: ' . $e->getMessage());
         }

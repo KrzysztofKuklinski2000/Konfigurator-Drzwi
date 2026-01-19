@@ -50,6 +50,6 @@
             ?>
         </div>
     </main>
-    <script src="/js/main.js?v=<?= time() ?>"></script>
+    <!-- <script src="/js/main.js?v=<?= time() ?>"></script> -->
 </body>
 </html>
