@@ -16,11 +16,18 @@ W głównym katalogu projektu uruchom terminal i zainstaluj biblioteki PHP (mPDF
 composer install
 ```
 
+DLA XAMPP TRZEBA W PLIKU  php.init (C:\xampp\php) odkomentować linijkę: ;extension=gd -> extension=gd
+LUB 
+
+```bash
+composer install --ignore-platform-req=ext-gd
+```
+
 ### 3. Instalacja i kompilacja Frontend (Tailwind CSS)
 
 ```bash
     npm install
-    npm run build
+    npm run dev
 ```
 
 ### 4. Baza Danych
@@ -29,7 +36,7 @@ composer install
     - phpMyAdmin: Wybierz bazę -> Importuj -> Wybierz plik.
     - Terminal: 
 ```bash 
-    mysql -u root -p konfigurator < Database.sql
+    mysql -u root -p konfigurator < Konfigurator.sql
 ```
 
 ### 5.Konfiguracja połączenia
@@ -40,3 +47,10 @@ return [
     'username' => 'root',
     'password' => 'root',
 ];
+
+### 4. Odpalenie: 
+Przechodzimy do katalogu głównego projektu i w termialu wpisujemy: 
+
+```bash
+    php -S localhost:8000 -t public
+```
