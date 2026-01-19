@@ -8,6 +8,7 @@ use App\Core\Request;
 
 try {
     session_start();
+    // unset($_SESSION['order']);
     $request = new Request();
     $view = new View();
     $router = new Router($request, $view);

@@ -27,6 +27,7 @@ class Router {
             '/podsumowanie' => $orderController->summary(),
             '/zamowienie' => $orderController->order(),
             '/dziekujemy' => $orderController->success(),
+            '/generuj-pdf' => $orderController->pdf(),
             default => print("404 - Nie znaleziono"),
         };
     }
