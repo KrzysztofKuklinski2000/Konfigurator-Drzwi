@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\OrderService;
 use App\View;
 use Exception;
 use Mpdf\Mpdf;
@@ -11,55 +12,14 @@ use App\Model\DoorRepository;
 class OrderController extends AbstractController
 {
     private DoorRepository $doorRepository;
+    private OrderService $orderService;
     public function __construct(Request $request, View $view, )
     {
         parent::__construct($request, $view);
 
         // Inicjalizacja repozytorium drzwi z połączeniem do bazy danych
         $this->doorRepository = new DoorRepository($this->getDbConnection());
-    }
-
-    private function getSummaryData(): array {
-        $order = $this->request->getSession('order') ?? [];
-
-        $summaryData = [
-            'width' => $order['width'] ?? null,
-            'height' => $order['height'] ?? null,
-            'openingDirection' => null,
-            'color' => null,
-            'type' => null,
-            'accessories' => [],
-        ];
-
-        $summaryPrice = 0;
-
-        if (isset($order['openingDirectionId'])) {
-            $openingDirection = $this->doorRepository->getOpeningDirectionById($order['openingDirectionId']);
-            $summaryData['openingDirection'] = $openingDirection ? $openingDirection['nazwa'] : null;
-        }
-
-        if (isset($order['colorId'])) {
-            $color = $this->doorRepository->getColorById($order['colorId']);
-            $summaryData['color'] = $color ? $color['kod_hex'] : null;
-            $summaryPrice += $color ? $color['doplata'] : 0;
-        }
-
-        if (isset($order['typeId'])) {
-            $type = $this->doorRepository->getTypeById($order['typeId']);
-            $summaryData['type'] = $type ? $type['nazwa'] : null;
-            $summaryPrice += $type ? $type['cena_bazowa'] : 0;
-        }
-
-        if (!empty($order['accessories'])) {
-            $summaryData['accessories'] = $this->doorRepository->getAccessoryByIds($order['accessories']);
-       
-            foreach ($summaryData['accessories'] as $accessory) {
-                $summaryPrice += $accessory['cena'];
-            }
-        }
-
-        return ['summaryDetails' => $summaryData, 'summaryPrice' => $summaryPrice];
-        
+        $this->orderService = new OrderService($request, $this->doorRepository);
     }
     
     /**
@@ -97,7 +57,7 @@ class OrderController extends AbstractController
             }
         }
 
-        $summaryData = $this->getSummaryData();
+        $summaryData = $this->orderService->getSummaryData();
 
         $this->render('dimensions', [
             'openingDirections' => $this->doorRepository->getOpeningDirection(),
@@ -132,7 +92,7 @@ class OrderController extends AbstractController
             }
         }
 
-        $summaryData = $this->getSummaryData();
+        $summaryData = $this->orderService->getSummaryData();
 
         $this->render('model', [
             'colors' => $this->doorRepository->getColors(),
@@ -161,7 +121,7 @@ class OrderController extends AbstractController
             header('Location: /podsumowanie');
             exit();
         }
-        $summaryData = $this->getSummaryData();
+        $summaryData = $this->orderService->getSummaryData();
         $this->render('equipment', [
             'accessories' => $this->doorRepository->getAccessories(),
             'summaryData' => $summaryData['summaryDetails'],
@@ -189,7 +149,7 @@ class OrderController extends AbstractController
             header('Location: /wymiary');
         }
 
-        $summaryData = $this->getSummaryData();
+        $summaryData = $this->orderService->getSummaryData();
 
         $this->render('summary',[
             'summaryData' => $summaryData['summaryDetails'],
@@ -236,7 +196,7 @@ class OrderController extends AbstractController
 
                 
                 if(empty($errors)) {
-                    $summaryData = $this->getSummaryData();
+                    $summaryData =$this->orderService->getSummaryData();
                     $productsPrice = $summaryData['summaryPrice'];
 
                     $deliveryMethods = $this->doorRepository->getDeliveryMethods();
@@ -260,7 +220,7 @@ class OrderController extends AbstractController
                 $this->request->setSession('order', $order);
             }
 
-            $summaryData = $this->getSummaryData();
+            $summaryData = $this->orderService->getSummaryData();
 
             $this->render('order', [
                 'summaryData' => $summaryData['summaryDetails'],
@@ -294,7 +254,7 @@ class OrderController extends AbstractController
             exit();
         }
 
-        $summaryData = $this->getSummaryData();
+        $summaryData = $this->orderService->getSummaryData();
         $productsPrice = $summaryData['summaryPrice'];
         
         
