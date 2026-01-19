@@ -53,4 +53,48 @@ class OrderService {
 
         return ['summaryDetails' => $summaryData, 'summaryPrice' => $summaryPrice];
     }
+
+    public function saveOrder(array $order): int {
+
+        $summaryData = $this->getSummaryData();
+        $productsPrice = $summaryData['summaryPrice'];
+
+        $deliveryMethods = $this->doorRepository->getDeliveryMethods();
+        $deliveryPrice = 0;
+        foreach($deliveryMethods as $deliveryMethod) {
+            if($deliveryMethod['id'] === $order['deliveryMethodId']) {
+                $deliveryPrice = $deliveryMethod['cena'];
+                break;
+            }
+        }
+
+        $finalePrice = ($productsPrice + $deliveryPrice);
+
+        $orderId = $this->doorRepository->saveOrder(
+            $order, 
+            $finalePrice, 
+            $deliveryPrice, 
+            $productsPrice
+        );
+
+        $this->request->setSession('order', []);
+
+        return $orderId;
+    }
+
+    public function checkAccess(): void {
+        $order = $this->request->getSession('order') ?? [];
+
+        $missingData = 
+            empty($order['width']) || 
+            empty($order['height']) || 
+            empty($order['openingDirectionId']) || 
+            empty($order['colorId']) || 
+            empty($order['typeId']);
+
+        if($missingData) {
+            header('Location: /wymiary');
+            exit();
+        }
+    }
 }

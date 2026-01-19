@@ -136,18 +136,7 @@ class OrderController extends AbstractController
      * @return void
      */
     public function summary(): void {
-        $order = $this->request->getSession('order') ?? [];
-
-        $missingData = 
-            empty($order['width']) || 
-            empty($order['height']) || 
-            empty($order['openingDirectionId']) || 
-            empty($order['colorId']) || 
-            empty($order['typeId']);
-
-        if($missingData) {
-            header('Location: /wymiary');
-        }
+        $this->orderService->checkAccess();
 
         $summaryData = $this->orderService->getSummaryData();
 
@@ -159,20 +148,8 @@ class OrderController extends AbstractController
 
     public function order(): void {
         try{
-            $order = $this->request->getSession('order') ?? [];
-
-            $missingData = 
-                empty($order['width']) || 
-                empty($order['height']) || 
-                empty($order['openingDirectionId']) || 
-                empty($order['colorId']) || 
-                empty($order['typeId']);
-
-            if($missingData) {
-                header('Location: /wymiary');
-                exit();
-            }
-
+            $this->orderService->checkAccess();
+            $order = $this->request->getSession('order');
             $errors = [];
 
             if($this->request->getMethod() === 'POST') {
@@ -196,23 +173,8 @@ class OrderController extends AbstractController
 
                 
                 if(empty($errors)) {
-                    $summaryData =$this->orderService->getSummaryData();
-                    $productsPrice = $summaryData['summaryPrice'];
-
-                    $deliveryMethods = $this->doorRepository->getDeliveryMethods();
-                    $deliveryPrice = 0;
-                    foreach($deliveryMethods as $deliveryMethod) {
-                        if($deliveryMethod['id'] === $order['deliveryMethodId']) {
-                            $deliveryPrice = $deliveryMethod['cena'];
-                            break;
-                        }
-                    }
-
-                    $finalePrice = ($productsPrice + $deliveryPrice);
-                    $orderId = $this->doorRepository->saveOrder($order, $finalePrice, $deliveryPrice, $productsPrice);
-
-                    $this->request->setSession('order', []);
-
+                    
+                    $orderId = $this->orderService->saveOrder($order);
                     header('Location: /dziekujemy?id=' . $orderId);
                     exit();
                 }
@@ -240,20 +202,8 @@ class OrderController extends AbstractController
     }
 
     public function pdf(): void {
+        $this->orderService->checkAccess();
         $order = $this->request->getSession('order') ?? [];
-
-        $missingData = 
-            empty($order['width']) || 
-            empty($order['height']) || 
-            empty($order['openingDirectionId']) || 
-            empty($order['colorId']) || 
-            empty($order['typeId']);
-
-        if($missingData) {
-            header('Location: /wymiary');
-            exit();
-        }
-
         $summaryData = $this->orderService->getSummaryData();
         $productsPrice = $summaryData['summaryPrice'];
         
