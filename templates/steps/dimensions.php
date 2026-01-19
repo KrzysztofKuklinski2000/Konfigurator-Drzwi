@@ -71,7 +71,7 @@
         </div>
 
         <button type="submit" class="p-4 bg-blue-500 rounded text-white font-bold mt-8 hover:bg-blue-600 transition shadow-lg w-full md:w-auto">
-            Dalej
+            Zapisz
         </button>
     </form>
 
